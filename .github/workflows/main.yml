@@ -37,7 +37,7 @@ jobs:
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund.
+        run: npm install --no-audit --no-fund
 
       - name: Prepare web and native assets
         run: |
