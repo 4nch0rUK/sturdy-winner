@@ -1,0 +1,6 @@
+{
+  "appId": "com.mitch.contractwhist",
+  "appName": "Contract Whist Score Tracker",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contract Whist Score Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="bg-orb bg-orb-left"></div>
+  <div class="bg-orb bg-orb-right"></div>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="logo-wrap" aria-hidden="true">
+        <svg class="logo" viewBox="0 0 64 64" role="img">
+          <rect x="6" y="6" width="52" height="52" rx="10"></rect>
+          <path d="M32 14 L37 26 L50 26 L39 34 L43 48 L32 39 L21 48 L25 34 L14 26 L27 26 Z"></path>
+          <text x="32" y="57" text-anchor="middle">CW</text>
+        </svg>
+      </div>
+      <div>
+        <p class="eyebrow">Score Tracker</p>
+        <h1>Contract Whist</h1>
+      </div>
+    </header>
+
+    <main>
+      <section id="menu-view" class="view active">
+        <div class="panel panel-menu">
+          <h2>Main Menu</h2>
+          <p class="subtle">Choose what you want to do.</p>
+          <div class="menu-actions">
+            <button class="menu-btn" data-view="setup-view">Start</button>
+            <button class="menu-btn" data-view="rules-view">Rules</button>
+            <button class="menu-btn" data-view="history-view">History</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="setup-view" class="view">
+        <div class="panel">
+          <div class="title-row">
+            <h2>Start New Game</h2>
+            <button class="ghost-btn" data-view="menu-view">Back</button>
+          </div>
+          <form id="setup-form">
+            <div class="grid">
+              <label for="player-count">Number of Players</label>
+              <input id="player-count" name="playerCount" type="number" min="2" max="8" value="4" required>
+
+              <label for="game-mode">Game Type</label>
+              <select id="game-mode" name="gameMode">
+                <option value="full" selected>Full</option>
+                <option value="half">Half</option>
+              </select>
+
+              <label for="start-cards">Start Cards Per Player</label>
+              <input id="start-cards" name="startCards" type="number" min="2" max="26" value="10" required>
+
+              <div id="end-cards-block" class="row-pair">
+                <label for="end-cards">End Cards Per Player</label>
+                <input id="end-cards" name="endCards" type="number" min="2" max="26" value="6" required>
+              </div>
+
+              <label for="scoring-profile">Scoring Variant</label>
+              <select id="scoring-profile" name="scoringProfile">
+                <option value="blackout">Blackout: exact bid = 10 + bid, else 0</option>
+                <option value="trick-bonus" selected>Contract Whist: 1 per trick + 10 if exact</option>
+                <option value="squared-penalty">Nomination style: exact 10 + bid^2, miss = -diff^2</option>
+              </select>
+            </div>
+
+            <fieldset>
+              <legend>Special Rounds (append to end)</legend>
+              <div class="special-rounds">
+                <label class="checkline"><input type="checkbox" name="special-round" value="blind"> Blind (start cards, bidding blind)</label>
+                <label class="checkline"><input type="checkbox" name="special-round" value="no-trumps"> No Trumps (start cards, trump fixed to no trumps)</label>
+                <label class="checkline"><input type="checkbox" name="special-round" value="miz"> Miz (start cards, no bidding, no trumps, special scoring)</label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Player Names</legend>
+              <div id="player-name-fields" class="name-fields"></div>
+            </fieldset>
+
+            <button type="submit" class="primary-btn">Start Game</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="score-view" class="view">
+        <div class="panel">
+          <div class="title-row">
+            <div>
+              <h2>Scoring</h2>
+              <p id="round-meta" class="subtle"></p>
+            </div>
+            <button class="ghost-btn" data-view="menu-view">Main Menu</button>
+          </div>
+
+          <div class="context-row">
+            <div class="context-chip" id="cards-chip"></div>
+            <div class="context-chip" id="dealer-chip"></div>
+            <div class="context-chip" id="leader-chip"></div>
+            <div class="context-chip" id="trump-chip"></div>
+            <div class="context-chip" id="difference-chip"></div>
+          </div>
+
+          <div class="score-layout">
+            <div>
+              <div class="panel inset phase-box" id="phase-box">
+                <h3 id="phase-title">Bidding</h3>
+                <p id="phase-instruction"></p>
+                <p id="phase-error" class="error-line hidden"></p>
+
+                <form id="bid-form" class="inline-form">
+                  <input id="bid-input" type="number" min="0" step="1" required>
+                  <button type="submit" class="primary-btn">Submit Bid</button>
+                  <button id="undo-bid-btn" type="button" class="ghost-btn">Undo Bid</button>
+                </form>
+
+                <div id="trump-picker" class="trump-picker hidden">
+                  <button type="button" class="trump-btn trump-black" data-trump="spades"><span class="trump-icon">&spades;</span> Spades</button>
+                  <button type="button" class="trump-btn trump-red" data-trump="hearts"><span class="trump-icon">&hearts;</span> Hearts</button>
+                  <button type="button" class="trump-btn trump-red" data-trump="diamonds"><span class="trump-icon">&diams;</span> Diamonds</button>
+                  <button type="button" class="trump-btn trump-black" data-trump="clubs"><span class="trump-icon">&clubs;</span> Clubs</button>
+                  <button type="button" class="trump-btn trump-nt" data-trump="none"><span class="trump-icon">NT</span> No Trumps</button>
+                </div>
+
+                <form id="trick-form" class="inline-form hidden">
+                  <input id="trick-input" type="number" min="0" step="1" required>
+                  <button type="submit" class="primary-btn">Submit Tricks Won</button>
+                </form>
+              </div>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Bid</th>
+                    <th>Tricks</th>
+                    <th>Round Pts</th>
+                    <th>Total</th>
+                    <th>Zero Streak</th>
+                  </tr>
+                </thead>
+                <tbody id="player-status-rows"></tbody>
+              </table>
+            </div>
+
+            <aside class="panel inset">
+              <div class="title-row compact">
+                <h3>Leaderboard</h3>
+                <button id="expand-board-btn" type="button" class="ghost-btn">Expand</button>
+              </div>
+              <ol id="leaderboard" class="leaderboard"></ol>
+            </aside>
+          </div>
+
+          <div id="expanded-board" class="panel inset hidden">
+            <div class="title-row compact">
+              <h3>Round Breakdown</h3>
+              <button id="close-board-btn" type="button" class="ghost-btn">Close</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead id="expanded-head"></thead>
+                <tbody id="expanded-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="game-complete" class="complete hidden">
+            <h3>Game Complete</h3>
+            <p id="winner-line"></p>
+            <button id="start-another-btn" class="primary-btn" data-view="setup-view">Start Another Game</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="rules-view" class="view">
+        <div class="panel">
+          <div class="title-row">
+            <h2>Rules</h2>
+            <button class="ghost-btn" data-view="menu-view">Back</button>
+          </div>
+          <div id="rules-list" class="stack"></div>
+        </div>
+      </section>
+
+      <section id="history-view" class="view">
+        <div class="panel">
+          <div class="title-row">
+            <h2>Recent Games</h2>
+            <button class="ghost-btn" data-view="menu-view">Back</button>
+          </div>
+          <div id="history-list" class="stack"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+

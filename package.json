@@ -1,0 +1,24 @@
+{
+  "name": "contract-whist-score-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Contract Whist score tracker web app with Android/iOS wrappers via Capacitor.",
+  "scripts": {
+    "prepare:web": "powershell -ExecutionPolicy Bypass -File scripts/prepare-web.ps1",
+    "prepare:web:unix": "bash scripts/prepare-web.sh",
+    "brand:assets": "powershell -ExecutionPolicy Bypass -File scripts/generate-branding-assets.ps1",
+    "cap:assets": "npm run brand:assets && npx @capacitor/assets generate",
+    "cap:sync": "npm run prepare:web && npx cap sync",
+    "cap:android": "npm run prepare:web && npx cap sync android && npx cap open android",
+    "cap:ios": "npm run prepare:web && npx cap sync ios && npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/ios": "^7.0.0"
+  }
+}
