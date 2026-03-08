@@ -41,8 +41,9 @@ jobs:
 
       - name: Prepare web and native assets
         run: |
-          npm run prepare:web
-          npm run cap:assets
+          npm run prepare:web:unix
+          npx @capacitor/assets generate
+
 
       - name: Ensure Android project exists
         run: |
