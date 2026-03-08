@@ -9,7 +9,7 @@ Generated production source assets for Capacitor:
 Regenerate at any time:
 
 ```powershell
-npm run brand:assets
+npm run brand:assets:win
 ```
 
 Then create native platform icon/splash sets:
@@ -17,3 +17,4 @@ Then create native platform icon/splash sets:
 ```powershell
 npm run cap:assets
 ```
+

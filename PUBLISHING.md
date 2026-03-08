@@ -76,7 +76,7 @@ Source generator and output:
 Commands:
 
 ```powershell
-npm run brand:assets
+npm run brand:assets:win  # Windows only, optional if you want to regenerate base PNGs
 npm run cap:assets
 ```
 
